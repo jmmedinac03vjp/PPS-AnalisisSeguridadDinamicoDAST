@@ -37,7 +37,7 @@ El primero `WebGoat` lo hemos descargado para la realización de la actividad <h
 ](##-🔍-Escaneos-con-Nikto). También puedes repetir los escaneos con todas las máquinas.
 
 
-### 1. OWASP WebGoat
+### 1. OWASP NodeGoat
 
 [NodeGoat](https://github.com/OWASP/NodeGoat) es una aplicación web de código abierto desarrollada por **OWASP** (Open Web Application Security Project) que sirve como plataforma de aprendizaje para la seguridad en aplicaciones **Node.js**.
 
