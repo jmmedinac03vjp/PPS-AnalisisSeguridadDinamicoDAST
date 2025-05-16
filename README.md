@@ -166,17 +166,21 @@ En este caso probamos los grupos 1, 2, 3 y b
                                c     Remote Source Inclusion
                                x     Reverse Tuning Options (i.e., include all except specified)
 
+![](images/dast4.png)
+
 ### Escaneo agresivo con detección de archivos ocultos y fuzzing
 
 -C all → Analiza todas las opciones de seguridad, directorios, etc...
-Al escanear todos los directorios, tarda considerablemente más tiempo.
 
 
 ```bash
 nikto -h http://localhost:4000 -C all
 ```
-![](images/dast4.png)
 
+![](images/dast5.png)
+
+Al escanear todos los directorios, tarda considerablemente más tiempo. Vemos que 1012 s. frente a los 4 s. en escaneos anteriores.
+--
 
 ### Escaneo con autenticación (si la aplicación tiene login)
 
@@ -189,7 +193,7 @@ nikto -h http://localhost:4000 -id usuario:contraseña
 
 Ejemplo: Si la aplicación tiene una página de login, Nikto probará el escaneo después de autenticarse.
 
-![](images/dast3.png)
+![](images/dast6.png)
 
 ###  Escaneo con User-Agent personalizado (para evitar bloqueos)
 
