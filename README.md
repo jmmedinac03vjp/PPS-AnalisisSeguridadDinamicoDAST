@@ -253,7 +253,7 @@ http://localhost:3000
 ```bash
 nikto -h lista_de_objetivos.txt
 ```
-![](images/dast3.png)
+![](images/dast10.png)
 
 ###  Escaneo con bypass de firewalls y detección de tecnologías
 
@@ -352,4 +352,4 @@ Se abre crontab, añadir la siguiente linea:
 
 ## 📚 Créditos
 
-Adaptado de la actividad "Análisis de Seguridad Dinámico con DAST".
+Adaptado de la actividad "Análisis de Seguridad Dinámico con DAST" de Raúl Fuentes Ferrer.
