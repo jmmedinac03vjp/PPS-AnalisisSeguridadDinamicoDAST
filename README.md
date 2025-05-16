@@ -98,7 +98,7 @@ DVWA es otra aplicación web insegura. Está escrita en PHP y  diseñada para pr
 #### Instalación con Docker
 
 ```bash
-docker run --rm -it -p 4000:80 vulnerables/web-dvwa
+docker run --rm -d -p 4000:80 vulnerables/web-dvwa
 ```
 
 DVWA a la que accedemos desde <http://localhost:4000> permite probar ataques como:
@@ -113,7 +113,7 @@ WebGoat es un entorno de aprendizaje donde puedes practicar exploits.
 #### Instalación con Docker
 
 ```bash
-docker run --rm -it -p 4000:8080 webgoat/webgoat-8.0
+docker run --rm -d -p 4000:8080 webgoat/webgoat-8.0
 ```
 
 A WebGoat accedemos desde <http://localhost:4000/WebGoat>. Iincluye ejercicios para probar:
@@ -170,17 +170,18 @@ En este caso probamos los grupos 1, 2, 3 y b
 
 ### Escaneo agresivo con detección de archivos ocultos y fuzzing
 
--C all → Analiza todas las opciones de seguridad, directorios, etc...
-
 
 ```bash
 nikto -h http://localhost:4000 -C all
 ```
+ Con los modificadores`-C all` → Analiza todas las opciones de seguridad, directorios, etc...
+
 
 ![](images/dast5.png)
 
 Al escanear todos los directorios, tarda considerablemente más tiempo. Vemos que 1012 s. frente a los 4 s. en escaneos anteriores.
---
+
+---
 
 ### Escaneo con autenticación (si la aplicación tiene login)
 
@@ -224,18 +225,30 @@ También se pueden exportar los resultados en otros formatos:
                                xml   XML Format
                                (if not specified the format will be taken from the file extension passed to -output)
  
-![](images/dast3.png)
+![](images/dast7.png)
+
+Aquí podemos ver los datos de `resultado_scan.html`
+
+![](images/dast8.png)
+
 
 ###  Escaneo en múltiples subdominios o direcciones IP
+
 Si la aplicación usa varios subdominios, se pueden escanear de manera simultánea con un archivo de direcciones IP o dominios:
 Ejemplo de archivo con varias direcciones IP o dominios llamado lista_de_objetivos.txt:
 
+Vamos a levantar  la máquina `DVWA` con `docker`
+
+```bash
+docker run --rm -d -p 3000:80 vulnerables/web-dvwa
+```
+
 archivo `lista_de_objetivos.txt`
 ```
+http://localhost:4000
 http://localhost:3000
-http://api.localhost:3000
-http://admin.localhost:3000
 ```
+![](images/dast9.png)
 
 ```bash
 nikto -h lista_de_objetivos.txt
@@ -305,12 +318,15 @@ session_set_cookie_params([
 
 Muchos servidores muestran por defecto información sobre la versión del software, lo que facilita ataques dirigidos.
 
+**Ejemplo de configuración en Apache** (`apache2.conf` o `httpd.conf`):
+
 ```apacheconf
 ServerTokens Prod
 ServerSignature Off
 ```
 
 #### Repetir escaneos regularmente
+
 La seguridad es un proceso continuo. Las configuraciones y actualizaciones pueden introducir nuevas
 vulnerabilidades, por lo que es fundamental realizar escaneos periódicos.
 ---
@@ -330,115 +346,6 @@ Se abre crontab, añadir la siguiente linea:
 
 ```
 0 2 * * * nikto -h http://localhost:4000 -o /var/logs/nikto_scan.log
-```
-
----
-
-## 🧰 OWASP ZAP CLI
-
-### Instalación
-```bash
-sudo apt install zaproxy -y
-```
-Nikto puede programarse para ejecutarse automáticamente en un cronjob o script CI/CD.
-Ejemplo de cronjob en Linux (ejecuta Nikto diariamente a las 2 AM):
-### Escaneo rápido
-```bash
-zaproxy -cmd -quickurl http://localhost:4000 -quickout scan_result.html
-```
-
----
-
-## ⚙️ CI/CD con ZAP
-
-### GitHub Actions
-`.github/workflows/zap_scan.yml`:
-
-```yaml
-name: DAST Scan
-on: push
-
-jobs:
-  zap_scan:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Instalar OWASP ZAP
-        run: sudo apt-get install zaproxy -y
-
-      - name: Ejecutar escaneo
-        run: zaproxy -cmd -autorun zap_scan.yaml
-
-      - name: Guardar reporte
-        uses: actions/upload-artifact@v3
-        with:
-          name: ZAP-Report
-          path: zap_report.html
-```
-
-`zap_scan.yaml`:
-```yaml
-jobs:
-  - type: spider
-    parameters:
-      url: "http://localhost:4000"
-      maxDuration: 2
-  - type: activeScan
-    parameters:
-      url: "http://localhost:4000"
-      recurse: true
-      maxDuration: 5
-  - type: report
-    parameters:
-      template: traditional-html
-      reportFile: zap_report.html
-      reportTitle: "ZAP Scan Report"
-```
-
----
-
-### GitLab CI/CD
-
-`.gitlab-ci.yml`:
-```yaml
-stages:
-  - dast
-
-zap_scan:
-  stage: dast
-  image: owasp/zap2docker-stable
-  script:
-    - zap.sh -cmd -autorun zap_scan.yaml
-  artifacts:
-    paths:
-      - zap_report.html
-```
-
----
-
-### Jenkins Declarativo
-
-`Jenkinsfile`:
-```groovy
-pipeline {
-  agent any
-  stages {
-    stage('Download OWASP ZAP') {
-      steps {
-        sh 'sudo apt-get install zaproxy -y'
-      }
-    }
-    stage('Run OWASP ZAP Scan') {
-      steps {
-        sh 'zaproxy -cmd -autorun zap_scan.yaml'
-      }
-    }
-    stage('Save Report') {
-      steps {
-        archiveArtifacts artifacts: 'zap_report.html', fingerprint: true
-      }
-    }
-  }
-}
 ```
 
 ---
