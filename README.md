@@ -198,14 +198,16 @@ Ejemplo: Si la aplicación tiene una página de login, Nikto probará el escaneo
 
 ###  Escaneo con User-Agent personalizado (para evitar bloqueos)
 
-Algunas aplicaciones bloquean ciertas herramientas de escaneo. Cambiar el User-Agent para enmascarar a
-Nikto:
+Algunas aplicaciones bloquean ciertas herramientas de escaneo. ç
+Cambiar el User-Agent para enmascarar a Nikto es una de las cosas que podemos hacer.
 
-```bash
-nikto -h http://localhost:4000 -useragent "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
-```
+El UserAgent utilizado lo podemos encontrar dentro del archivo de configuración `/etc/nikto/config.txt`
 
-![](images/dast3.png)
+![](images/dast11.png)
+
+Podemos sustituir el UserAgent.
+
+En la siguiente página tienes información: <https://gist.github.com/theMiddleBlue/502f516b38470446d07fa196d65dc79e>
 
 ### Guardar resultados
 
@@ -260,15 +262,13 @@ nikto -h lista_de_objetivos.txt
 Si la aplicación tiene mecanismos de defensa (como WAF o IDS), intentar este escaneo:
 
 ```bash
-nikto -h http://localhost:4000 -useragent "Mozilla..." -useproxy http://127.0.0.1:8080
+nikto -h http://localhost:4000  -useproxy http://127.0.0.1:8080
 ```
 
 Explicación:
-- `-useragent` → Enmascara el escaneo como si fuera un navegador normal.
 - `-useproxy` → Si se usa Burp Suite o ZAP, redirige el tráfico a través del proxy en 127.0.0.1:8080.
 
 
-![](images/dast3.png)
 
 ---
 
